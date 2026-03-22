@@ -1,0 +1,34 @@
+sequenceDiagram
+  autonumber
+  participant VB as Visitor Browser
+  participant W as Embedded widget.js
+  participant API as Next.js API
+  participant DB as Supabase DB
+  participant GEO as ipapi.co
+
+  VB->>W: Load page with widget script
+  W->>W: Extract widgetId from script URL
+  W->>API: POST /api/track (widgetId, pageUrl, referrer)
+  API->>DB: Validate widgetId + user paid status
+  API->>DB: Check monthly_pageviews limit
+  API->>GEO: GeoIP lookup (with timeout)
+  GEO-->>API: Location or fallback Unknown
+  API->>DB: Insert visitors row
+  API->>DB: RPC increment_monthly_pageviews
+  API-->>W: 200 Tracked
+
+  W->>API: Open SSE /api/visitors/:widgetId/stream
+  loop Every few seconds
+    API->>DB: Query latest visitors + counts
+    API-->>W: Snapshot only if changed (hash dedupe)
+  end
+
+  alt SSE unavailable / error
+    loop Every 10s
+      W->>API: GET /api/visitors/:widgetId?limit=N
+      API->>DB: Query visitors + totalToday + activeNow
+      API-->>W: JSON payload
+    end
+  end
+
+  W->>VB: Render/update globe points and rings

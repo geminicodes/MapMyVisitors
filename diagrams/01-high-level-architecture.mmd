@@ -1,0 +1,39 @@
+flowchart LR
+  subgraph Clients
+    V["Visitor on Customer Website"]
+    O["Owner / Customer Dashboard User"]
+  end
+
+  subgraph Embed
+    W["widget.js Runtime<br/>(public/widget.js)"]
+    G["globe.gl CDN Assets"]
+  end
+
+  subgraph App["Next.js App (Single Repo/Deploy)"]
+    P["App Pages<br/>(landing, login, dashboard, demo)"]
+    A["API Routes<br/>track, visitors, stream,<br/>verify-license, recover, customer"]
+  end
+
+  subgraph Data
+    S[("Supabase Postgres")]
+  end
+
+  subgraph External
+    I["ipapi.co<br/>GeoIP"]
+    U["Gumroad API<br/>License Verify"]
+    R["Resend<br/>Email"]
+  end
+
+  V -->|"Loads embedded script"| W
+  W -->|"Renders globe"| G
+  W -->|"POST /api/track"| A
+  W -->|"SSE /api/visitors/:widgetId/stream"| A
+  W -->|"Fallback GET /api/visitors/:widgetId"| A
+
+  O -->|"Visits app pages"| P
+  P -->|"Calls authenticated APIs"| A
+
+  A <--> S
+  A --> I
+  A --> U
+  A --> R

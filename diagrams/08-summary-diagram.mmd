@@ -1,0 +1,30 @@
+flowchart TB
+  A["Customer embeds script<br/>widget.js?id=WIDGET_ID"] --> B["Widget runtime initializes"]
+  B --> C["Track event<br/>POST /api/track"]
+  C --> D["API validation + rate limit + paid check"]
+  D --> E["GeoIP lookup + Supabase write"]
+  E --> F["Visitor stored + monthly counter incremented"]
+
+  B --> G{"Realtime channel"}
+  G -->|"Primary"| H["SSE stream<br/>/api/visitors/:widgetId/stream"]
+  G -->|"Fallback"| I["Polling<br/>/api/visitors/:widgetId"]
+  H --> J["Normalized visitor payload"]
+  I --> J
+  J --> K["Globe renders dots/rings + minimal stats"]
+
+  L["Owner logs in"] --> M["verify-license + auth cookie"]
+  M --> N["/dashboard + /api/customer"]
+  N --> O["User sees widget code + usage summary"]
+
+  subgraph Data_and_Services["Data & Services"]
+    P[("Supabase")]
+    Q["ipapi.co"]
+    R["Gumroad API"]
+    S["Resend"]
+  end
+
+  D --> P
+  E --> P
+  D --> Q
+  M --> R
+  M --> S

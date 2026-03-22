@@ -1,0 +1,53 @@
+erDiagram
+  USERS {
+    uuid id PK
+    string email
+    string widget_id
+    boolean paid
+    boolean watermark_removed
+    datetime created_at
+    datetime updated_at
+  }
+
+  VISITORS {
+    uuid id PK
+    uuid user_id
+    string country
+    string country_code
+    string city
+    float latitude
+    float longitude
+    string page_url
+    string user_agent
+    string referrer
+    datetime created_at
+  }
+
+  MONTHLY_PAGEVIEWS {
+    uuid id PK
+    uuid user_id
+    date month
+    int pageview_count
+    datetime created_at
+    datetime updated_at
+  }
+
+  CUSTOMERS {
+    uuid id PK
+    string email
+    string license_key
+    string plan
+    datetime purchased_at
+    int pageviews_used
+    int pageviews_limit
+    string website_domains
+    string status
+    string widget_id
+    uuid user_id
+    datetime created_at
+    datetime updated_at
+  }
+
+  USERS ||--o{ VISITORS : owns
+  USERS ||--o{ MONTHLY_PAGEVIEWS : accumulates
+  USERS ||--o| CUSTOMERS : linked_account
