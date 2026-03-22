@@ -130,7 +130,7 @@ export default function LoginPage() {
                 <p className="text-sm text-text-secondary">
                   Don&apos;t have a license key?{' '}
                   <a
-                    href="https://valentinadeveloper.gumroad.com/l/map-my-visitors"
+                    href="https://tally.so/r/9qlzDp"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-accent-blue hover:text-accent-purple font-medium transition-colors"
