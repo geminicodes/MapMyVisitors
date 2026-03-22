@@ -84,7 +84,7 @@ export default function Home() {
               </div>
 
               <a
-                href="https://valentinadeveloper.gumroad.com/l/map-my-visitors"
+                href="https://tally.so/r/9qlzDp"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-7 sm:px-8 py-3.5 sm:py-4 text-base sm:text-lg bg-gradient-to-r from-accent-blue to-accent-purple text-white font-bold rounded-lg hover:-translate-y-0.5 transition-all duration-200 shadow-xl hover:shadow-accent-blue/50 mb-4"
