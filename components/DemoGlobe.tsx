@@ -58,6 +58,61 @@ declare global {
   }
 }
 
+/**
+ * InteractiveGlobe
+ *
+ * A 3D globe built with globe.gl (loaded from CDN via next/script) and driven
+ * imperatively from a React component. globe.gl is not React-aware, so all
+ * setup and teardown is handled manually inside useEffect.
+ *
+ * Lifecycle
+ * ---------
+ * - globe.gl is loaded once via <Script> and signals readiness through
+ *   `onReady` → `setScriptReady(true)`.
+ * - The main useEffect runs after both `scriptReady` and a valid DOM ref are
+ *   confirmed. It initialises the Globe instance, attaches it to
+ *   `globeMountRef`, and stores the instance in `globeRef`.
+ * - On unmount, `mountedRef` is flipped to false, the pulse interval and
+ *   interaction timeout are cleared, and `renderer().dispose()` is called to
+ *   release the WebGL context.
+ *
+ * Auto-rotation & interaction
+ * ---------------------------
+ * - `controls().autoRotate` runs a slow 15-second cycle by default.
+ * - Any pointer/touch interaction calls `pauseAutoRotate()`, which clears
+ *   any pending resume timeout and sets `autoRotate = false`.
+ * - After 3 seconds of inactivity, `resumeAutoRotate()` re-enables it.
+ * - All interaction listeners (pointerdown, touchstart, wheel) are stored in
+ *   an array and removed in the cleanup return of useEffect.
+ *
+ * Pulse animation
+ * ---------------
+ * - Recent visitors (`isRecent: true`) pulse by oscillating `pointAltitude`
+ *   via `setInterval` at ~30 fps using `Math.sin`.
+ * - The interval ref is stored in `pulseIntervalRef` and cleared on unmount.
+ *
+ * Resize handling
+ * ---------------
+ * - A `ResizeObserver` watches `containerRef` and updates globe width/height
+ *   on change. The observer is disconnected in the useEffect cleanup.
+ *
+ * Reduced motion
+ * --------------
+ * - `window.matchMedia('(prefers-reduced-motion: reduce)')` is checked on
+ *   init. If true, auto-rotation and pulse animation are both disabled.
+ *
+ * Demo data
+ * ---------
+ * - `visitorPoints` is hardcoded and stabilised with `useMemo` to prevent
+ *   the globe from re-initialising on every render.
+ * - 8 recent (blue, pulsing) + 17 historical (gray, static) points.
+ *
+ * Error states
+ * ------------
+ * - WebGL availability is checked before init; sets `error` state on failure.
+ * - CDN load failure is caught via the `<Script>` `onError` callback.
+ */
+
 export default function InteractiveGlobe() {
   const containerRef = useRef<HTMLDivElement>(null)
   const globeMountRef = useRef<HTMLDivElement>(null)
