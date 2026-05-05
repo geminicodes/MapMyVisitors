@@ -18,6 +18,7 @@
 - **Full-stack in one repo** — Next.js App Router handles both the React UI and all API routes; Supabase Postgres stores visitor geo data with RLS enabled throughout
 - **License-gated access** — Gumroad license verification provisions a customer record, sets an auth cookie, and gates the widget behind payment; watermark is removed on upgrade
 - **Production-aware API** — widget ID format validation before any DB query, in-memory rate limiters with bounded maps, atomic monthly counter increments via DB RPC to prevent race conditions, and `server-only` on the Supabase service client to prevent accidental client-side exposure
+- Integrates globe.gl imperatively inside React with full lifecycle cleanup — mount, resize observer, interaction listeners, and unmount handled explicitly
 
 > **Note:** the live demo at `/demo` uses simulated data — the full tracking pipeline is built and ready, the product is currently in pre-launch.
 
